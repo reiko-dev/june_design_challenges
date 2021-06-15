@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:june_design_challenges/parallax_scrolling/parallax_scrolling_page.dart';
+import 'package:june_design_challenges/ecotourism_website/ecotourism_main_page.dart';
 
 void main() {
   runApp(MyApp());
@@ -14,7 +14,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: ParallaxScrollingPage(),
+      home: EcotourismMainPage(),
     );
   }
 }
