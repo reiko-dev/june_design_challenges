@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:june_design_challenges/ecotourism_website/ecotourism_main_page.dart';
+import 'package:june_design_challenges/drag_and_drop/drag_and_drop_page.dart';
 
 void main() {
   runApp(MyApp());
@@ -14,7 +14,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: EcotourismMainPage(),
+      home: const DragAndDropPage(),
     );
   }
 }

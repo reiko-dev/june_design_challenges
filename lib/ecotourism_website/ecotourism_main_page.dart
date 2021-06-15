@@ -3,10 +3,12 @@ import 'package:june_design_challenges/ecotourism_website/center_panel.dart';
 import 'package:june_design_challenges/ecotourism_website/destinations.dart';
 
 class EcotourismMainPage extends StatelessWidget {
+  const EcotourismMainPage();
+
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-    final double topPanelHeight = 30.0;
+    const topPanelHeight = 30.0;
     return Scaffold(
       body: SingleChildScrollView(
         child: Center(
@@ -64,7 +66,7 @@ class EcotourismMainPage extends StatelessWidget {
                               ),
                               Positioned(
                                 top: 15,
-                                child: TopPanel(topPanelHeight),
+                                child: const TopPanel(topPanelHeight),
                               ),
                             ],
                           ),
@@ -202,7 +204,7 @@ class FeaturedElement extends StatelessWidget {
 }
 
 class TopPanel extends StatelessWidget {
-  TopPanel(this.height) : super(key: UniqueKey());
+  const TopPanel(this.height);
   final double height;
 
   @override
