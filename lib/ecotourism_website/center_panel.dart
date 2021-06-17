@@ -3,7 +3,10 @@ import 'package:flutter/material.dart';
 class CenterPanel extends StatefulWidget {
   const CenterPanel({
     Key? key,
+    required this.isMobile,
   }) : super(key: key);
+
+  final bool isMobile;
 
   @override
   _CenterPanelState createState() => _CenterPanelState();
@@ -13,8 +16,7 @@ class _CenterPanelState extends State<CenterPanel> {
   bool showIcons = true;
   late Size containerSize;
   late double dividerPadding;
-  bool isHorizontalLayout = false;
-  var divider = VerticalDivider(
+  var verticalDivider = VerticalDivider(
     color: Colors.grey.shade400,
     indent: 10,
     endIndent: 10,
@@ -22,19 +24,24 @@ class _CenterPanelState extends State<CenterPanel> {
   );
   void updateContainerSize(Size size) {
     showIcons = true;
-    isHorizontalLayout = false;
     double height = size.height >= 500 ? 50 : size.height * .1;
-    double width = size.width * .6;
+    double width = 480; //maxWidth
 
-    if (size.width <= 600) {
-      isHorizontalLayout = true;
+    if (widget.isMobile) {
+      width = 200;
       height = 200;
-      width = 250;
+      showIcons = true;
+    } else {
+      if (size.width < 500) {
+        width = size.width * 0.9;
+      }
+
+      if (size.width < 800 && widget.isMobile == false) {
+        showIcons = false;
+      }
+
+      dividerPadding = height * .2;
     }
-
-    if (size.width > 600 && size.width < 800) showIcons = false;
-
-    dividerPadding = height * .2;
 
     containerSize = Size(width, height);
   }
@@ -43,7 +50,7 @@ class _CenterPanelState extends State<CenterPanel> {
   Widget build(BuildContext context) {
     updateContainerSize(MediaQuery.of(context).size);
 
-    return isHorizontalLayout
+    return widget.isMobile
         ? SizedBox(
             width: containerSize.width,
             height: containerSize.height,
@@ -89,22 +96,22 @@ class _CenterPanelState extends State<CenterPanel> {
                   if (showIcons) Icon(Icons.place_outlined),
                   Text('Destination'),
                 ]),
-                divider,
+                verticalDivider,
                 Row(children: [
                   if (showIcons) Icon(Icons.date_range_outlined),
                   Text('Dates'),
                 ]),
-                divider,
+                verticalDivider,
                 Row(children: [
                   if (showIcons) Icon(Icons.person),
                   Text('People'),
                 ]),
-                divider,
+                verticalDivider,
                 Row(children: [
                   if (showIcons) Icon(Icons.light_mode),
                   Text('Experience'),
                 ]),
-                divider,
+                verticalDivider,
                 SizedBox(
                   width: containerSize.width * .15,
                   height: containerSize.height * .8,
@@ -142,11 +149,20 @@ class CenterPanelTile extends StatelessWidget {
     return Expanded(
       child: Card(
         child: Padding(
-          padding: const EdgeInsets.only(left: 38.0),
-          child: Row(children: [
-            if (showIcons) icon,
-            Text(title),
-          ]),
+          padding: const EdgeInsets.only(left: 8.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              if (showIcons) icon,
+              VerticalDivider(
+                endIndent: 12,
+                indent: 12,
+                width: 10,
+                thickness: 1,
+              ),
+              Text(title),
+            ],
+          ),
         ),
       ),
     );
