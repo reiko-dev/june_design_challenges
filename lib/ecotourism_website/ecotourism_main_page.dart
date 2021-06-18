@@ -14,8 +14,6 @@ class EcotourismMainPage extends StatelessWidget {
     bool isMobile = size.width < 500;
 
     Widget _buildMobile() {
-      final centerBarSize = Size(200, 200);
-
       final double featuredCarouselHeight = max(size.height * .5, 300);
 
       return Stack(

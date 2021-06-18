@@ -1,64 +1,104 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
+import 'package:june_design_challenges/derolez_portifolio/data/work.dart';
 
 final buttonsColor = Colors.grey.shade900;
 final inkWellColor = const Color(0xFF282828);
-final pageTitle =
-    'Rafael Derolez is a freelance front-end engineer with a strong focus on interfaces and experiences working remotely from Ghent, Belgium.';
 
-class DerolezPage extends StatelessWidget {
+class DerolezPage extends StatefulWidget {
   const DerolezPage({Key? key}) : super(key: key);
 
+  @override
+  _DerolezPageState createState() => _DerolezPageState();
+}
+
+class _DerolezPageState extends State<DerolezPage> {
+  final pageTitle =
+      'Rafael Derolez is a freelance front-end engineer with a strong focus on interfaces and experiences working remotely from Ghent, Belgium.';
+
+  final double maxWidth = 1000;
+  final double minHeight = 500;
+  Work? work;
+  void showWorkItemDetails(Work work) {
+    this.work = work;
+    setState(() {});
+    print(work);
+  }
+
+  void hideWorkItemDetails() {
+    work = null;
+    setState(() {});
+  }
+
   Size getSize(Size size) {
-    double height = size.height;
+    //MinHeight
+    double height = minHeight;
+    double width = maxWidth;
 
-    if (size.height < 480) height = 480;
+    if (size.height >= minHeight) height = size.height;
 
-    return Size(size.width, height);
+    if (size.width <= maxWidth) {
+      width = size.width * 0.95;
+    }
+
+    return Size(width, height);
+  }
+
+  Size getWindowAnimationSize(Size size) {
+    double width = size.width * 0.95;
+    double height = size.height * 0.95;
+
+    if (size.width * 0.95 > 950) width = 950;
+
+    return Size(width, height);
   }
 
   @override
   Widget build(BuildContext context) {
-    final size = getSize(MediaQuery.of(context).size);
+    final fullSize = MediaQuery.of(context).size;
+    final size = getSize(fullSize);
 
     return Scaffold(
       backgroundColor: const Color(0xFF000000),
       body: SingleChildScrollView(
         child: Center(
-          child: SizedBox(
-            height: size.height,
-            width: size.width * 0.9,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                SizedBox(
-                  width: size.width * 0.9,
-                  height: size.height * 0.3,
-                  child: Container(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        AutoSizeText(
-                          pageTitle,
-                          style: TextStyle(color: Colors.white, fontSize: 30),
-                          maxLines: 12,
-                          minFontSize: 8,
-                        ),
-                        SizedBox(height: 10),
-                        const PersonalElements(),
-                      ],
+          child: Stack(
+            children: [
+              SizedBox(
+                height: size.height,
+                width: size.width,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    AutoSizeText(
+                      pageTitle,
+                      style: TextStyle(color: Colors.white, fontSize: 30),
+                      maxLines: 12,
+                      minFontSize: 8,
                     ),
-                  ),
+                    SizedBox(height: 10),
+                    const PersonalElements(),
+                    SizedBox(height: 40),
+                    SizedBox(
+                      height: works.length * 90, //90px per line
+                      width: size.width,
+                      child: WorksMenu(
+                        showWorkItemDetails: showWorkItemDetails,
+                      ),
+                    ),
+                  ],
                 ),
-                SizedBox(
-                  height: 180,
-                  child: Container(
-                    child: MenuWorkItens(),
-                  ),
-                ),
-              ],
-            ),
+              ),
+
+              //PopUp animation
+              Positioned(
+                top: fullSize.height * 0.5,
+                left: fullSize.width * 0.25,
+                width: fullSize.width * 0.95,
+                child: WorkItemDetails(work: work),
+              )
+            ],
           ),
         ),
       ),
@@ -66,103 +106,84 @@ class DerolezPage extends StatelessWidget {
   }
 }
 
-class MenuWorkItens extends StatelessWidget {
-  const MenuWorkItens({Key? key}) : super(key: key);
+class WorksMenu extends StatelessWidget {
+  WorksMenu({required this.showWorkItemDetails}) : super(key: UniqueKey());
+
+  final void Function(Work work) showWorkItemDetails;
 
   @override
   Widget build(BuildContext context) {
+    final double separatorWidth = 20;
     return LayoutBuilder(
       builder: (context, bc) {
         return SizedBox.fromSize(
           size: bc.biggest,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Column(
-                children: [
-                  SizedBox(
-                    width: bc.maxWidth * 0.4,
-                    height: 80,
-                    child: WorkItem(
-                      color: Colors.grey,
-                      iconData: Icons.audiotrack,
-                      title: 'AUDIO',
-                      subTitle:
-                          'ermentum venenatis, ligula dui faucibus risus, vitae dictum nisl nunc nec nulla.',
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(top: 2.0, bottom: 8),
-                    child: SizedBox(
-                      width: bc.maxWidth * 0.4,
-                      height: 0.2,
-                      child: Padding(
-                        padding: const EdgeInsets.only(left: 77),
-                        child: DecoratedBox(
-                          decoration: BoxDecoration(
-                            color: Colors.white,
+          child: bc.maxWidth < 500
+              ? Column(
+                  children: List.generate(
+                    works.length,
+                    (index) {
+                      final work = works[index];
+
+                      return Padding(
+                        padding: EdgeInsets.only(top: 10),
+                        child: Container(
+                          // color: Colors.red,
+                          width: bc.maxWidth,
+                          height: 80,
+                          child: Column(
+                            children: [
+                              WorkItem(
+                                work: work,
+                                showWorkItemDetails: showWorkItemDetails,
+                              ),
+                              Container(
+                                width: bc.maxWidth * 0.2,
+                                height: 0.2,
+                                color: Colors.white,
+                              ),
+                            ],
                           ),
                         ),
-                      ),
-                    ),
+                      );
+                    },
                   ),
-                  SizedBox(
-                    width: bc.maxWidth * 0.4,
-                    height: 80,
-                    child: WorkItem(
-                      color: Colors.amber,
-                      iconData: Icons.gamepad,
-                      title: 'Fnatic Gear',
-                      subTitle:
-                          'Sed ornare odio sit amet risus imperdiet, at consequat mi hendrerit',
-                    ),
-                  ),
-                ],
-              ),
-              SizedBox(width: 20),
-              Column(
-                children: [
-                  SizedBox(
-                    width: bc.maxWidth * 0.4,
-                    height: 80,
-                    child: WorkItem(
-                      color: Colors.white,
-                      iconData: Icons.text_snippet_rounded,
-                      title: 'Text',
-                      subTitle:
-                          'ermentum venenatis, ligula dui faucibus risus, vitae dictum nisl nunc nec nulla.',
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(top: 2.0, bottom: 8),
-                    child: SizedBox(
-                      width: bc.maxWidth * 0.4,
-                      height: 0.2,
-                      child: Padding(
-                        padding: const EdgeInsets.only(left: 77),
-                        child: DecoratedBox(
-                          decoration: BoxDecoration(
-                            color: Colors.white,
+                )
+              : Wrap(
+                  direction: Axis.horizontal,
+                  alignment: WrapAlignment.spaceEvenly,
+                  children: List.generate(
+                    works.length,
+                    (index) {
+                      final work = works[index];
+
+                      return Padding(
+                        padding: EdgeInsets.only(
+                          right: index % 2 == 0 ? separatorWidth : 0.0,
+                        ),
+                        child: Container(
+                          // color: Colors.red,
+                          width: bc.maxWidth * 0.5 - separatorWidth / 2,
+                          height: 80,
+                          child: Column(
+                            children: [
+                              WorkItem(
+                                work: work,
+                                showWorkItemDetails: showWorkItemDetails,
+                              ),
+                              if (index + 2 < works.length)
+                                Container(
+                                  width: bc.maxWidth * 0.2,
+                                  height: 0.2,
+                                  color: Colors.white,
+                                ),
+                            ],
                           ),
                         ),
-                      ),
-                    ),
+                      );
+                    },
                   ),
-                  SizedBox(
-                    width: bc.maxWidth * 0.4,
-                    height: 80,
-                    child: WorkItem(
-                      color: Colors.pink,
-                      iconData: Icons.mic_none_rounded,
-                      title: 'Mariah or Messiah',
-                      subTitle:
-                          'Sed ornare odio sit amet risus imperdiet, at consequat mi hendrerit',
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
+                ),
         );
       },
     );
@@ -172,16 +193,12 @@ class MenuWorkItens extends StatelessWidget {
 class WorkItem extends StatelessWidget {
   const WorkItem({
     Key? key,
-    required this.color,
-    required this.iconData,
-    required this.subTitle,
-    required this.title,
+    required this.work,
+    required this.showWorkItemDetails,
   }) : super(key: key);
 
-  final Color color;
-  final IconData iconData;
-  final String title;
-  final String subTitle;
+  final Work work;
+  final void Function(Work work) showWorkItemDetails;
 
   @override
   Widget build(BuildContext context) {
@@ -191,10 +208,10 @@ class WorkItem extends StatelessWidget {
           width: 66,
           height: 66,
           decoration: BoxDecoration(
-            color: color,
+            color: work.color,
             borderRadius: BorderRadius.circular(10),
           ),
-          child: Icon(iconData),
+          child: Icon(work.iconData),
         ),
         SizedBox(width: 8),
         Expanded(
@@ -203,7 +220,7 @@ class WorkItem extends StatelessWidget {
               SizedBox(
                 width: double.infinity,
                 child: Text(
-                  title,
+                  work.title,
                   textAlign: TextAlign.left,
                   overflow: TextOverflow.fade,
                   maxLines: 1,
@@ -213,7 +230,7 @@ class WorkItem extends StatelessWidget {
               SizedBox(
                 width: double.infinity,
                 child: Text(
-                  subTitle,
+                  work.subTitle,
                   overflow: TextOverflow.ellipsis,
                   textAlign: TextAlign.left,
                   maxLines: 2,
@@ -227,11 +244,110 @@ class WorkItem extends StatelessWidget {
         MyButton(
           text: 'View',
           onTap: () {
-            print(title);
+            showWorkItemDetails(work);
           },
         ),
       ],
     );
+  }
+}
+
+class WorkItemDetails extends StatelessWidget {
+  WorkItemDetails({Key? key, required this.work})
+      : super(key: work != null ? ValueKey('work-${work.key}') : null);
+  final Work? work;
+
+  @override
+  Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+
+    return work == null
+        ? SizedBox.shrink()
+        : LayoutBuilder(
+            builder: (context, bc) {
+              print(bc);
+              return Container(
+                width: bc.maxWidth,
+                height: 200,
+                color: Colors.amber,
+              );
+
+              return Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(15),
+                  border: Border.all(color: Colors.white),
+                  color: Colors.black,
+                ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    SizedBox(
+                      height: size.height * 0.13,
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Container(color: Colors.green),
+                      ),
+                    ),
+                    SizedBox(
+                      height: size.height * 0.13,
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Container(color: Colors.green),
+                      ),
+                    ),
+                    Container(
+                      color: Colors.red,
+                      child: Center(
+                        child: AspectRatio(
+                          aspectRatio: 3 / 2,
+                          child: DecoratedBox(
+                            decoration: BoxDecoration(color: Colors.blue),
+                          ),
+                        ),
+                      ),
+                    ),
+                    Container(
+                      color: Colors.green.withAlpha(100),
+                      child: Text(
+                        work!.description,
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w600,
+                          fontSize: 14,
+                        ),
+                      ),
+                    ),
+                    GestureDetector(
+                      onTap: () {
+                        print('visit');
+                      },
+                      child: Container(
+                        width: bc.maxWidth * 0.3,
+                        height: 30,
+                        decoration: BoxDecoration(
+                          color: Colors.grey.shade900,
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Align(
+                          alignment: bc.maxWidth > 800
+                              ? Alignment.centerLeft
+                              : Alignment.center,
+                          child: Text(
+                            'Visit',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w600,
+                              fontSize: 14,
+                            ),
+                          ),
+                        ),
+                      ),
+                    )
+                  ],
+                ),
+              );
+            },
+          );
   }
 }
 
