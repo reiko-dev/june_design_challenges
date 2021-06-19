@@ -1,16 +1,20 @@
 import 'dart:math';
 
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:june_design_challenges/ecotourism_website/center_panel.dart';
 import 'package:june_design_challenges/ecotourism_website/destinations.dart';
+import 'package:june_design_challenges/ecotourism_website/data/feature.dart';
 
+//Clean the code.
 class EcotourismMainPage extends StatelessWidget {
   const EcotourismMainPage();
 
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-    const topPanelHeight = 30.0;
+    final topPanelTopPadding = MediaQuery.of(context).padding.top;
+    const topPanelHeight = 35.0;
     bool isMobile = size.width < 500;
 
     Widget _buildMobile() {
@@ -56,7 +60,7 @@ class EcotourismMainPage extends StatelessWidget {
                     ),
                     //TopPanel
                     Positioned(
-                      top: 15,
+                      top: topPanelTopPadding,
                       child: TopPanel(
                         height: topPanelHeight,
                         isMobile: isMobile,
@@ -113,46 +117,9 @@ class EcotourismMainPage extends StatelessWidget {
                       child: Row(
                         children: [
                           Expanded(
-                            child: ListView(
-                              scrollDirection: Axis.horizontal,
-                              children: [
-                                Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: SizedBox(
-                                    height: featuredCarouselHeight * 0.65,
-                                    width: featuredCarouselHeight * 0.65,
-                                    child: FeaturedElement(
-                                      title: 'Animals',
-                                      image:
-                                          'https://painel.portalamazonia.com/uploads/RTEmagicC_animal-poder-onca.jpg.jpg',
-                                    ),
-                                  ),
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: SizedBox(
-                                    height: featuredCarouselHeight * 0.65,
-                                    width: featuredCarouselHeight * 0.65,
-                                    child: FeaturedElement(
-                                      image:
-                                          'https://t2.ea.ltmcdn.com/pt/images/2/3/3/o_guaxinim_como_animal_de_estimacao_2332_orig.jpg',
-                                      title: 'Photography',
-                                    ),
-                                  ),
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: SizedBox(
-                                    height: featuredCarouselHeight * 0.65,
-                                    width: featuredCarouselHeight * 0.65,
-                                    child: FeaturedElement(
-                                      image:
-                                          'https://blog.penatrilha.com.br/wp-content/uploads/2016/09/Trekking.jpg',
-                                      title: 'Trekking',
-                                    ),
-                                  ),
-                                ),
-                              ],
+                            child: FeaturedList(
+                              isMobile: isMobile,
+                              size: Size(featuredCarouselHeight, size.width),
                             ),
                           ),
                         ],
@@ -161,7 +128,7 @@ class EcotourismMainPage extends StatelessWidget {
                   ],
                 ),
               ),
-              const Destinations(),
+              Destinations(isMobile),
             ],
           ),
           Positioned(
@@ -172,7 +139,7 @@ class EcotourismMainPage extends StatelessWidget {
       );
     }
 
-    Widget _buildWeb() {
+    Widget _buildWeb(Size size) {
       return Column(
         children: [
           //Page1
@@ -227,7 +194,7 @@ class EcotourismMainPage extends StatelessWidget {
 
                           //TopPanel
                           Positioned(
-                            top: 15,
+                            top: topPanelTopPadding,
                             child: TopPanel(
                               height: topPanelHeight,
                               isMobile: false,
@@ -241,23 +208,22 @@ class EcotourismMainPage extends StatelessWidget {
                     SizedBox(
                       width: size.width,
                       height: size.height * .5,
-                      child: Container(
-                        color: Colors.green,
-                        child: Column(
-                          children: [
-                            Expanded(
+                      child: Column(
+                        children: [
+                          Expanded(
+                            flex: 4,
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
                               child: Row(
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
                                 children: [
                                   Expanded(
-                                    child: FractionallySizedBox(
-                                      widthFactor: 0.7,
-                                      child: FittedBox(
-                                        child: Text(
-                                          'Featured',
-                                          style: TextStyle(),
-                                        ),
+                                    child: FittedBox(
+                                      alignment: Alignment.centerLeft,
+                                      child: Text(
+                                        'Featured',
+                                        style: TextStyle(),
                                       ),
                                     ),
                                   ),
@@ -275,40 +241,16 @@ class EcotourismMainPage extends StatelessWidget {
                                 ],
                               ),
                             ),
-                            Expanded(
-                              child: Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Row(
-                                  children: [
-                                    Expanded(
-                                      child: FeaturedElement(
-                                        title: 'Animals',
-                                        image:
-                                            'https://painel.portalamazonia.com/uploads/RTEmagicC_animal-poder-onca.jpg.jpg',
-                                      ),
-                                    ),
-                                    SizedBox(width: size.width * 0.02),
-                                    Expanded(
-                                      child: FeaturedElement(
-                                        image:
-                                            'https://t2.ea.ltmcdn.com/pt/images/2/3/3/o_guaxinim_como_animal_de_estimacao_2332_orig.jpg',
-                                        title: 'Photography',
-                                      ),
-                                    ),
-                                    SizedBox(width: size.width * 0.02),
-                                    Expanded(
-                                      child: FeaturedElement(
-                                        image:
-                                            'https://blog.penatrilha.com.br/wp-content/uploads/2016/09/Trekking.jpg',
-                                        title: 'Trekking',
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
+                          ),
+                          //Featured Elements
+                          Expanded(
+                            flex: 6,
+                            child: FeaturedList(
+                              isMobile: isMobile,
+                              size: size,
                             ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
                     ),
                   ],
@@ -320,15 +262,74 @@ class EcotourismMainPage extends StatelessWidget {
               ],
             ),
           ),
-          const Destinations(),
+          Destinations(isMobile),
         ],
       );
     }
 
     return Scaffold(
       body: SingleChildScrollView(
-        child: isMobile ? _buildMobile() : _buildWeb(),
+        child: isMobile
+            ? _buildMobile()
+            : _buildWeb(
+                Size(size.width, size.height < 600 ? 600 : size.height)),
       ),
+    );
+  }
+}
+
+class FeaturedList extends StatelessWidget {
+  FeaturedList({
+    required this.size,
+    required this.isMobile,
+  }) : super(key: ValueKey('FeaturedList-Key'));
+
+  final Size size;
+  final bool isMobile;
+  final double webMinWidth = 350;
+
+  double getWidth(Size size, BoxConstraints bc) {
+    double width = 0;
+
+    if (isMobile) {
+      width = bc.maxWidth * 0.8;
+    } else {
+      width =
+          bc.maxWidth * .32 < webMinWidth ? webMinWidth : bc.maxWidth * 0.32;
+    }
+    return width;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (context, bc) {
+        double width = getWidth(size, bc);
+
+        return ScrollConfiguration(
+          behavior: ScrollConfiguration.of(context).copyWith(dragDevices: {
+            PointerDeviceKind.mouse,
+            PointerDeviceKind.touch,
+          }),
+          child: SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+                children: List.generate(
+              featuresList.length,
+              (index) => SizedBox(
+                width: width,
+                height: bc.maxHeight,
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: FeaturedElement(
+                    feature: featuresList[index],
+                  ),
+                ),
+              ),
+            )),
+          ),
+        );
+      },
     );
   }
 }
@@ -336,12 +337,10 @@ class EcotourismMainPage extends StatelessWidget {
 class FeaturedElement extends StatelessWidget {
   const FeaturedElement({
     Key? key,
-    required this.image,
-    required this.title,
+    required this.feature,
   }) : super(key: key);
 
-  final String image;
-  final String title;
+  final Feature feature;
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(
@@ -355,7 +354,7 @@ class FeaturedElement extends StatelessWidget {
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(15),
                   image: DecorationImage(
-                    image: NetworkImage(image),
+                    image: NetworkImage(feature.image),
                     fit: BoxFit.cover,
                   ),
                 ),
@@ -368,7 +367,7 @@ class FeaturedElement extends StatelessWidget {
                 child: Padding(
                   padding: const EdgeInsets.only(left: 8.0),
                   child: Text(
-                    title,
+                    feature.title,
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                     ),
@@ -404,9 +403,9 @@ class TopPanel extends StatelessWidget {
                 children: [
                   Positioned(
                     left: 0,
-                    child: Icon(
-                      Icons.menu,
-                      color: Colors.white,
+                    child: IconButton(
+                      icon: Icon(Icons.menu, color: Colors.white),
+                      onPressed: () {},
                     ),
                   ),
                   Text(

@@ -1,7 +1,10 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:june_design_challenges/ecotourism_website/data/destination.dart';
 
 class Destinations extends StatefulWidget {
-  const Destinations();
+  Destinations(this.isMobile) : super(key: ValueKey('Destinations-key'));
+  final bool isMobile;
 
   @override
   _DestinationsState createState() => _DestinationsState();
@@ -9,20 +12,22 @@ class Destinations extends StatefulWidget {
 
 class _DestinationsState extends State<Destinations>
     with SingleTickerProviderStateMixin {
-  final tabs = [
-    'North America',
-    'South America',
-    'Europe',
-    'Asia',
-    'Africa',
-    'Australia'
-  ];
   late final TabController tabController;
-
+  late final PageController pageController;
+  final destinations = destinationsList;
   @override
   void initState() {
     super.initState();
-    tabController = TabController(length: tabs.length, vsync: this);
+    tabController = TabController(length: destinations.length, vsync: this);
+    pageController = PageController(initialPage: 0, viewportFraction: 0.9);
+  }
+
+  double getTabWidth(Size size) {
+    double maxWidth = 600;
+    double tabWidth = size.width * 0.75;
+    if (tabWidth > maxWidth) tabWidth = maxWidth;
+
+    return tabWidth;
   }
 
   @override
@@ -46,47 +51,75 @@ class _DestinationsState extends State<Destinations>
           ),
           SizedBox(
             height: size.height * .6,
-            width: size.width * 0.9,
+            width: size.width,
             child: Stack(
               fit: StackFit.expand,
               alignment: Alignment.center,
               children: [
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(15),
-                  child: Image.network(
-                    'https://shotkit.com/wp-content/uploads/2020/08/night-landscape-photography-featured.jpg',
-                    fit: BoxFit.cover,
-                  ),
-                ),
-                Center(
-                  child: SizedBox(
-                    width: size.width * 0.4,
-                    height: size.height * 0.15,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
+                PageView.builder(
+                  scrollDirection: Axis.horizontal,
+                  scrollBehavior: ScrollConfiguration.of(context).copyWith(
+                      dragDevices: {
+                        PointerDeviceKind.mouse,
+                        PointerDeviceKind.touch,
+                        PointerDeviceKind.unknown
+                      }),
+                  pageSnapping: true,
+                  onPageChanged: (val) {
+                    tabController.animateTo(val);
+                  },
+                  controller: pageController,
+                  itemCount: destinations.length,
+                  itemBuilder: (context, index) {
+                    return Stack(
+                      fit: StackFit.expand,
+                      alignment: Alignment.center,
                       children: [
-                        Expanded(
-                          child: FittedBox(
-                            fit: BoxFit.contain,
-                            child: Text(
-                              'Europe',
-                              style: TextStyle(color: Colors.white),
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(15),
+                            child: Image.network(
+                              destinations[index].image,
+                              fit: BoxFit.cover,
                             ),
                           ),
                         ),
-                        Text(
-                          'Discover 56 tours',
-                          style: TextStyle(color: Colors.white),
+                        Center(
+                          child: SizedBox(
+                            width: size.width * 0.4,
+                            height: size.height * 0.15,
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Expanded(
+                                  child: FittedBox(
+                                    fit: BoxFit.contain,
+                                    child: Text(
+                                      destinations[index].name,
+                                      style: TextStyle(color: Colors.white),
+                                    ),
+                                  ),
+                                ),
+                                Text(
+                                  'Discover 56 tours',
+                                  style: TextStyle(color: Colors.white),
+                                ),
+                              ],
+                            ),
+                          ),
                         ),
                       ],
-                    ),
-                  ),
+                    );
+                  },
                 ),
-                if (size.width >= 700)
+
+                //TabBar
+                if (!widget.isMobile && size.width > 750)
                   Positioned(
                     bottom: 0,
                     child: Container(
-                      width: size.width * 0.75,
+                      width: getTabWidth(size),
                       height: 50,
                       decoration: BoxDecoration(
                         color: Colors.white,
@@ -94,12 +127,19 @@ class _DestinationsState extends State<Destinations>
                       ),
                       child: TabBar(
                         controller: tabController,
+                        onTap: (val) {
+                          pageController.animateToPage(
+                            val,
+                            duration: Duration(milliseconds: 1000),
+                            curve: Curves.easeInCirc,
+                          );
+                        },
                         indicatorColor: const Color(0xFF051221),
                         indicatorSize: TabBarIndicatorSize.label,
                         tabs: [
-                          for (var tab in tabs)
+                          for (var tab in destinations)
                             Text(
-                              tab,
+                              tab.name,
                               textAlign: TextAlign.center,
                               style: TextStyle(color: Colors.black),
                             ),

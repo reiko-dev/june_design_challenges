@@ -25,7 +25,7 @@ class _CenterPanelState extends State<CenterPanel> {
   void updateContainerSize(Size size) {
     showIcons = true;
     double height = size.height >= 500 ? 50 : size.height * .1;
-    double width = 480; //maxWidth
+    double width = 500; //maxWidth
 
     if (widget.isMobile) {
       width = 200;
@@ -36,7 +36,7 @@ class _CenterPanelState extends State<CenterPanel> {
         width = size.width * 0.9;
       }
 
-      if (size.width < 800 && widget.isMobile == false) {
+      if (size.width < 800 && !widget.isMobile) {
         showIcons = false;
       }
 
