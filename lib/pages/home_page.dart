@@ -6,7 +6,7 @@ import 'package:june_design_challenges/widgets/custom_expansion_panel.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 const appBarColor = Color(0xFF3949ab);
-const textColor = Colors.black;
+const textColor = Color(0xFF284778);
 const fadedTextColor = Colors.black54;
 const selectedPanelColor = Color.fromARGB(255, 220, 220, 220);
 
@@ -236,7 +236,29 @@ class _PageDescription extends StatelessWidget {
                         ),
                       ),
                     ),
-                  )
+                  ),
+                  if (page!.sourceCodeUrl != null)
+                    Align(
+                      alignment: const Alignment(.9, 1),
+                      child: Padding(
+                        padding: const EdgeInsets.only(top: 16.0, right: 8),
+                        child: RichText(
+                          text: TextSpan(
+                            text: 'Source code',
+                            recognizer: TapGestureRecognizer()
+                              ..onTap = () {
+                                launchUrl(Uri.parse(page!.sourceCodeUrl!));
+                              },
+                            mouseCursor: SystemMouseCursors.click,
+                            style: const TextStyle(
+                              color: Color(0xFF2F3C8D),
+                              fontWeight: FontWeight.bold,
+                              fontStyle: FontStyle.italic,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
                 ],
               ),
       ),
@@ -283,11 +305,11 @@ class PageTile extends StatelessWidget {
                           size: 40,
                         ),
                 ),
-              VerticalDivider(
-                color: Colors.white.withOpacity(.25),
-                thickness: 1.5,
-                endIndent: 20,
-                indent: 20,
+              const VerticalDivider(
+                color: Colors.black45,
+                thickness: 1,
+                endIndent: 25,
+                indent: 25,
                 width: 30,
               ),
               Expanded(
@@ -300,7 +322,11 @@ class PageTile extends StatelessWidget {
                       maxLines: 2,
                       softWrap: true,
                       overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(color: textColor, fontSize: 20),
+                      style: const TextStyle(
+                        color: textColor,
+                        fontSize: 20,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                     Row(
                       children: [
@@ -311,7 +337,7 @@ class PageTile extends StatelessWidget {
                             child: LinearProgressIndicator(
                               value: difficulty,
                               color: Colors.amber,
-                              backgroundColor: fadedTextColor,
+                              backgroundColor: Colors.black38,
                             ),
                           ),
                         ),
@@ -320,8 +346,8 @@ class PageTile extends StatelessWidget {
                           child: Text(
                             pageData.difficulty.toString(),
                             maxLines: 1,
-                            style: TextStyle(
-                              color: textColor.withOpacity(.5),
+                            style: const TextStyle(
+                              color: textColor,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
@@ -337,44 +363,4 @@ class PageTile extends StatelessWidget {
       );
     });
   }
-}
-
-class PageData {
-  final String title;
-  final Difficulty difficulty;
-  final String description;
-  final String? iconSvg;
-  final IconData? icon;
-  final String? url;
-  final Widget pageWidget;
-
-  const PageData({
-    required this.title,
-    required this.description,
-    required this.difficulty,
-    String? iconSvg,
-    this.icon,
-    required this.pageWidget,
-    this.url,
-  })  : assert(
-          iconSvg == null || icon == null,
-          'Can\'t have both icon (IconData) and a SVG icon',
-        ),
-        assert(
-          iconSvg != null || icon != null,
-          'Either icon (IconData) or svgIcon must not be null',
-        ),
-        iconSvg = iconSvg == null ? null : 'assets/svg_icons/$iconSvg.svg';
-}
-
-enum Difficulty {
-  easy('Easy'),
-  intermediate('Intermediate'),
-  advanced('Advanced');
-
-  const Difficulty(this._txt);
-  final String _txt;
-
-  @override
-  String toString() => _txt;
 }

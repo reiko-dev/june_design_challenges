@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:june_design_challenges/pages/derolez_portifolio/derolez_page.dart';
 import 'package:june_design_challenges/pages/drag_and_drop/drag_and_drop_page.dart';
 import 'package:june_design_challenges/pages/ecotourism_website/ecotourism_page.dart';
-import 'package:june_design_challenges/pages/home_page.dart';
 import 'package:june_design_challenges/pages/light_ray/light_ray_page.dart';
 import 'package:june_design_challenges/pages/parallax_scrolling/parallax_scrolling_page.dart';
 import 'package:june_design_challenges/pages/shimmer_loading_effect.dart/shimmer_loading_page.dart';
@@ -20,7 +19,7 @@ final List<PageData> pages = [
   const PageData(
     title: 'Drag and Drop',
     description:
-        'A page with a simple drag and drop system simulating a player acquisition cost for a football team.',
+        'A page with a simple drag and drop system simulating a player acquisition cost for a football team.\nHint: Drag a player and drop into a team.',
     difficulty: Difficulty.easy,
     icon: Icons.move_up,
     pageWidget: DragAndDropPage(),
@@ -58,11 +57,52 @@ final List<PageData> pages = [
     pageWidget: ShimmerLoadingPage(),
   ),
   const PageData(
-    title: 'Typing indicator Page',
+    title: 'Typing Indicator Page',
     description:
-        'Just a design demonstrating an indicator of typing on a chat.',
+        'Just a design demonstrating how to implement a typing indicator on a chat like app.',
     difficulty: Difficulty.easy,
     icon: Icons.view_compact_rounded,
     pageWidget: TypingIndicatorPage(),
   ),
 ];
+
+class PageData {
+  final String title;
+  final Difficulty difficulty;
+  final String description;
+  final String? iconSvg;
+  final IconData? icon;
+  final String? url;
+  final Widget pageWidget;
+  final String? sourceCodeUrl;
+  const PageData({
+    required this.title,
+    required this.description,
+    required this.difficulty,
+    String? iconSvg,
+    this.icon,
+    required this.pageWidget,
+    this.url,
+    this.sourceCodeUrl,
+  })  : assert(
+          iconSvg == null || icon == null,
+          'Can\'t have both icon (IconData) and a SVG icon',
+        ),
+        assert(
+          iconSvg != null || icon != null,
+          'Either icon (IconData) or svgIcon must not be null',
+        ),
+        iconSvg = iconSvg == null ? null : 'assets/svg_icons/$iconSvg.svg';
+}
+
+enum Difficulty {
+  easy('Easy'),
+  intermediate('Intermediate'),
+  advanced('Advanced');
+
+  const Difficulty(this._txt);
+  final String _txt;
+
+  @override
+  String toString() => _txt;
+}
